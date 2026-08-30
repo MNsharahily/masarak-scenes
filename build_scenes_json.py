@@ -16,9 +16,7 @@ import importlib.util
 # ---------------------------------------------------------------------------
 # Load simulate_endings.py as the single source of truth for numbers/logic
 # ---------------------------------------------------------------------------
-import os
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-spec = importlib.util.spec_from_file_location("simulate_endings", os.path.join(BASE_DIR, "simulate_endings.py"))
+spec = importlib.util.spec_from_file_location("simulate_endings", "/home/user/workspace/simulate_endings.py")
 sim = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(sim)
 
@@ -722,7 +720,26 @@ SCENES["C12"] = {
     "location": "برج أعمال في الرياض — بعد اجتماع الفرصة الأكبر",
     "characters": [],
     "savePoint": {"timing": "afterChapter", "visualStage": "V3"},
-    "conditionalOpenings": [],
+    "conditionalOpenings": [
+        {
+            "id": "C12-open-معتمد",
+            "condition": {"flag": "معتمد"},
+            "beats": [
+                stage("إذا وُجد علم «معتمد» (من C6-A)"),
+                narr("قبل أن ينغلق باب المصعد بدقائق، يتصل بك منسق برنامج الاعتماد المهني الذي أنهيته قبل أشهر: مشروع تقني كبير في المدينة يبحث عن استشاري معتمد لمراجعة خطته قبل الإطلاق."),
+                narr("المكالمة لا تُغيّر القرار الذي أمامك، لكنها تُذكّرك أن الاعتماد الذي دفعت ثمنه من مالك حينها بدأ يفتح أبوابًا لم تكن في الحسبان."),
+            ],
+        },
+        {
+            "id": "C12-open-دراسة_متقدمة",
+            "condition": {"flag": "دراسة_متقدمة"},
+            "beats": [
+                stage("إذا وُجد علم «دراسة_متقدمة» (من C8-B)"),
+                narr("في طريقك إلى الاجتماع، تصلك رسالة من مشرف البرنامج التخصصي الذي أنهيته: يقترح اسمك ضمن فريق استشاري صغير يواكب مشاريع ناشئة مثل التي تقف على أعتابها الآن."),
+                narr("لا شيء في هذا العرض يُلزمك بشيء اليوم، لكنه يضيف طبقة أخرى إلى الثقة التي تحملها وأنت تدخل هذا الاجتماع."),
+            ],
+        },
+    ],
     "beats": [
         stage("باب المصعد الزجاجي ينغلق ببطء، منظر الرياض يتسع خلف الزجاج"),
         narr("ينغلق باب المصعد بعد اجتماع قد يغير السنوات القادمة. العرض الأول يمول توسعًا سريعًا إلى عدة مدن مقابل التزامات كبيرة. الثاني ينمو ببطء، يدرب الفريق، ويقبل أرباحًا أقل في البداية. والثالث يتيح لك التراجع من الإدارة اليومية والتخصص أو الدراسة بعمق."),
@@ -963,8 +980,8 @@ SCENES["GROWTH_REPORT"] = {
 # ---------------------------------------------------------------------------
 OUTPUT = {"$schema": "./scenes.schema.json", "meta": META, "scenes": SCENES}
 
-SCENES_JSON_PATH = os.path.join(BASE_DIR, "scenes.json")
-SCHEMA_PATH = os.path.join(BASE_DIR, "scenes.schema.json")
+SCENES_JSON_PATH = "/home/user/workspace/scenes.json"
+SCHEMA_PATH = "/home/user/workspace/scenes.schema.json"
 
 with open(SCENES_JSON_PATH, "w", encoding="utf-8") as f:
     json.dump(OUTPUT, f, ensure_ascii=False, indent=2)
