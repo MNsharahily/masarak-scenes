@@ -1,0 +1,540 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masaruk.local/schemas/scenes.schema.json",
+  "title": "مخطط التحقق من scenes.json — مَسَارُك",
+  "description": "يتحقق هذا المخطط من بنية ملف بيانات المشاهد الكامل لقصة (مَسَارُك): المقدمة P0، الفصول C1-C12، عقدة التقييم EVAL، النهايات الأربع E1-E4، وتقرير النمو السردي.",
+  "type": "object",
+  "required": ["meta", "scenes"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": { "$ref": "#/$defs/meta" },
+    "scenes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "P0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "C10", "C11", "C12",
+        "EVAL", "E1", "E2", "E3", "E4", "GROWTH_REPORT"
+      ],
+      "properties": {
+        "P0": { "$ref": "#/$defs/chapterScene" },
+        "C1": { "$ref": "#/$defs/chapterScene" },
+        "C2": { "$ref": "#/$defs/chapterScene" },
+        "C3": { "$ref": "#/$defs/chapterScene" },
+        "C4": { "$ref": "#/$defs/chapterScene" },
+        "C5": { "$ref": "#/$defs/chapterScene" },
+        "C6": { "$ref": "#/$defs/chapterScene" },
+        "C7": { "$ref": "#/$defs/chapterScene" },
+        "C8": { "$ref": "#/$defs/chapterScene" },
+        "C9": { "$ref": "#/$defs/chapterScene" },
+        "C10": { "$ref": "#/$defs/chapterScene" },
+        "C11": { "$ref": "#/$defs/chapterScene" },
+        "C12": { "$ref": "#/$defs/chapterScene" },
+        "EVAL": { "$ref": "#/$defs/evalScene" },
+        "E1": { "$ref": "#/$defs/endingScene" },
+        "E2": { "$ref": "#/$defs/endingScene" },
+        "E3": { "$ref": "#/$defs/endingScene" },
+        "E4": { "$ref": "#/$defs/endingScene" },
+        "GROWTH_REPORT": { "$ref": "#/$defs/growthReportScene" }
+      }
+    }
+  },
+
+  "$defs": {
+    "statCode": { "type": "string", "enum": ["K", "D", "C", "B", "R", "M", "P"] },
+    "endingCode": { "type": "string", "enum": ["E1", "E2", "E3", "E4"] },
+    "sceneId": {
+      "type": "string",
+      "pattern": "^(P0|C[1-9]|C1[0-2]|EVAL|E[1-4]|GROWTH_REPORT)$"
+    },
+
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "titleAr", "language", "textDirection", "stats", "clampRange",
+        "chapterOrder", "sceneOrder", "acts", "mitigationFlags",
+        "endingPriority", "savePoints", "visualEvolutionScreens", "sourceFiles"
+      ],
+      "properties": {
+        "titleAr": { "type": "string", "minLength": 1 },
+        "language": { "const": "ar" },
+        "textDirection": { "const": "rtl" },
+        "stats": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["K", "D", "C", "B", "R", "M", "P"],
+          "properties": {
+            "K": { "$ref": "#/$defs/statDef" },
+            "D": { "$ref": "#/$defs/statDef" },
+            "C": { "$ref": "#/$defs/statDef" },
+            "B": { "$ref": "#/$defs/statDef" },
+            "R": { "$ref": "#/$defs/statDef" },
+            "M": { "$ref": "#/$defs/statDef" },
+            "P": { "$ref": "#/$defs/statDef" }
+          }
+        },
+        "clampRange": { "$ref": "#/$defs/rangePair" },
+        "chapterOrder": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^C(1[0-2]|[1-9])$" },
+          "minItems": 12,
+          "maxItems": 12
+        },
+        "sceneOrder": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/sceneId" },
+          "minItems": 19,
+          "maxItems": 19
+        },
+        "acts": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["n", "titleAr", "chapters"],
+            "properties": {
+              "n": { "type": "integer", "enum": [1, 2, 3] },
+              "titleAr": { "type": "string", "minLength": 1 },
+              "chapters": {
+                "type": "array",
+                "items": { "$ref": "#/$defs/sceneId" },
+                "minItems": 1
+              }
+            }
+          }
+        },
+        "mitigationFlags": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "endingPriority": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/endingCode" },
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "savePoints": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^C(1[0-2]|[1-9])$" }
+        },
+        "visualEvolutionScreens": {
+          "type": "object",
+          "additionalProperties": { "type": "string", "pattern": "^V[1-9]$" }
+        },
+        "sourceFiles": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        }
+      }
+    },
+
+    "statDef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nameAr", "min", "max", "start", "visibleDuringStory"],
+      "properties": {
+        "nameAr": { "type": "string", "minLength": 1 },
+        "min": { "type": "integer" },
+        "max": { "type": "integer" },
+        "start": { "type": "integer", "minimum": 0 },
+        "visibleDuringStory": {
+          "oneOf": [
+            { "type": "boolean" },
+            { "const": "contextOnly" }
+          ]
+        }
+      }
+    },
+
+    "rangePair": {
+      "type": "array",
+      "items": { "type": "integer" },
+      "minItems": 2,
+      "maxItems": 2
+    },
+
+    "beat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "text"],
+      "properties": {
+        "type": { "type": "string", "enum": ["stage", "narr", "line"] },
+        "text": { "type": "string", "minLength": 1 },
+        "speaker": { "type": "string", "minLength": 1 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "line" } }, "required": ["type"] },
+          "then": { "required": ["speaker"] }
+        }
+      ]
+    },
+
+    "beatList": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/beat" }
+    },
+
+    "condition": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "stat": { "$ref": "#/$defs/statCode" },
+        "gte": { "type": "integer" },
+        "lt": { "type": "integer" },
+        "flag": { "type": "string", "minLength": 1 },
+        "notFlag": { "type": "string", "minLength": 1 },
+        "anyFlag": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "notAnyFlag": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "variable": { "type": "string", "minLength": 1 },
+        "equals": { "type": "string", "minLength": 1 },
+        "all": { "type": "array", "items": { "$ref": "#/$defs/condition" }, "minItems": 1 },
+        "default": { "type": "boolean" },
+        "repeatedFlag": { "type": "string", "minLength": 1 },
+        "countGte": { "type": "integer", "minimum": 1 },
+        "missingFlag": { "type": "string", "minLength": 1 }
+      }
+    },
+
+    "effects": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/statCode" },
+      "additionalProperties": { "type": "integer" }
+    },
+
+    "option": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code", "button", "immediateResponse", "tagsAr", "devNote",
+        "effects", "flag", "setsVariable"
+      ],
+      "properties": {
+        "code": { "type": "string", "pattern": "^(P0|C1[0-2]|C[1-9])-[A-Z]$" },
+        "button": { "type": "string", "minLength": 1 },
+        "immediateResponse": { "type": "string", "minLength": 1 },
+        "tagsAr": { "type": "string", "minLength": 1 },
+        "devNote": { "type": "string", "minLength": 1 },
+        "effects": { "$ref": "#/$defs/effects" },
+        "flag": { "type": ["string", "null"] },
+        "setsVariable": {
+          "type": ["object", "null"],
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["promptTitle", "promptText", "options"],
+      "properties": {
+        "promptTitle": { "type": "string", "minLength": 1 },
+        "promptText": { "type": "string", "minLength": 1 },
+        "options": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/option" },
+          "minItems": 2,
+          "maxItems": 3
+        }
+      }
+    },
+
+    "conditionalOpening": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "condition", "beats"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "condition": { "$ref": "#/$defs/condition" },
+        "label": { "type": "string" },
+        "beats": { "$ref": "#/$defs/beatList" }
+      }
+    },
+
+    "conditionalBeatEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "condition", "note", "beats"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "condition": { "$ref": "#/$defs/condition" },
+        "note": { "type": "string", "minLength": 1 },
+        "beats": { "$ref": "#/$defs/beatList" }
+      }
+    },
+
+    "modifier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "appliesWhenAnyFlag", "appliesToAllOptions", "extraEffects", "note"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "appliesWhenAnyFlag": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "appliesToAllOptions": { "type": "boolean" },
+        "extraEffects": { "$ref": "#/$defs/effects" },
+        "note": { "type": "string", "minLength": 1 }
+      }
+    },
+
+    "savePoint": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "timing": { "const": "afterChapter" },
+        "visualStage": { "type": "string", "pattern": "^V[1-9]$" }
+      },
+      "required": ["timing", "visualStage"]
+    },
+
+    "chapterScene": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id", "titleAr", "act", "location", "characters", "savePoint",
+        "conditionalOpenings", "beats", "decision", "transitionText", "next"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/sceneId" },
+        "titleAr": { "type": "string", "minLength": 1 },
+        "act": { "type": "integer", "enum": [1, 2, 3] },
+        "location": { "type": "string", "minLength": 1 },
+        "characters": { "type": "array", "items": { "type": "string" } },
+        "savePoint": { "$ref": "#/$defs/savePoint" },
+        "conditionalOpenings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/conditionalOpening" }
+        },
+        "beats": { "$ref": "#/$defs/beatList" },
+        "decision": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/decision" }
+          ]
+        },
+        "transitionText": { "type": "string", "minLength": 1 },
+        "next": { "$ref": "#/$defs/sceneId" },
+        "branchMap": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/sceneId" }
+        },
+        "conditionalBeats": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/conditionalBeatEntry" }
+        },
+        "modifiers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/modifier" }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "id": { "const": "P0" } } },
+          "then": { "properties": { "decision": { "const": null } } }
+        },
+        {
+          "if": { "not": { "properties": { "id": { "const": "P0" } } } },
+          "then": { "properties": { "decision": { "$ref": "#/$defs/decision" } } }
+        },
+        {
+          "if": { "properties": { "id": { "const": "C9" } } },
+          "then": { "required": ["branchMap"] }
+        },
+        {
+          "if": { "properties": { "id": { "const": "C10" } } },
+          "then": { "required": ["conditionalBeats", "modifiers"] }
+        }
+      ]
+    },
+
+    "endingConditionBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["devFormula"],
+      "properties": {
+        "devFormula": { "type": "string", "minLength": 1 },
+        "all": { "type": "array", "items": { "$ref": "#/$defs/condition" }, "minItems": 1 },
+        "default": { "type": "boolean" }
+      },
+      "anyOf": [
+        { "required": ["all"] },
+        { "required": ["default"] }
+      ]
+    },
+
+    "evalScene": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "titleAr", "location", "characters", "beats", "transitionText", "resolution", "next"],
+      "properties": {
+        "id": { "const": "EVAL" },
+        "titleAr": { "type": "string", "minLength": 1 },
+        "location": { "type": "string", "minLength": 1 },
+        "characters": { "type": "array", "items": { "type": "string" } },
+        "beats": { "$ref": "#/$defs/beatList" },
+        "transitionText": { "type": "string", "minLength": 1 },
+        "next": { "type": "string" },
+        "resolution": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["summaryAr", "clampRange", "priority", "conditions"],
+          "properties": {
+            "summaryAr": { "type": "string", "minLength": 1 },
+            "clampRange": { "$ref": "#/$defs/rangePair" },
+            "priority": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/endingCode" },
+              "minItems": 4,
+              "maxItems": 4
+            },
+            "conditions": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["E1", "E2", "E3", "E4"],
+              "properties": {
+                "E1": { "$ref": "#/$defs/endingConditionBlock" },
+                "E2": { "$ref": "#/$defs/endingConditionBlock" },
+                "E3": { "$ref": "#/$defs/endingConditionBlock" },
+                "E4": { "$ref": "#/$defs/endingConditionBlock" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "endingVariant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["textAr"],
+      "properties": {
+        "axis": { "$ref": "#/$defs/statCode" },
+        "op": { "type": "string", "enum": ["gte", "lt"] },
+        "value": { "type": "integer" },
+        "mode": { "const": "fullSceneVariant" },
+        "beats": { "$ref": "#/$defs/beatList" },
+        "reason": { "$ref": "#/$defs/condition" },
+        "textAr": { "type": "string", "minLength": 1 }
+      },
+      "anyOf": [
+        { "required": ["axis", "op", "value"] },
+        { "required": ["reason"] }
+      ]
+    },
+
+    "endingScene": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id", "titleAr", "location", "characters", "beats", "conditionSummaryAr",
+        "devFormula", "variantsCombineMode", "variants", "taglineAr", "next"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/endingCode" },
+        "titleAr": { "type": "string", "minLength": 1 },
+        "location": { "type": "string", "minLength": 1 },
+        "characters": { "type": "array", "items": { "type": "string" } },
+        "beats": { "$ref": "#/$defs/beatList" },
+        "conditionSummaryAr": { "type": "string", "minLength": 1 },
+        "devFormula": { "type": "string", "minLength": 1 },
+        "variantsCombineMode": {
+          "type": "string",
+          "enum": ["independentInsertions", "exclusiveSceneReplace", "reasonDependentInsertion"]
+        },
+        "variants": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/endingVariant" },
+          "minItems": 1
+        },
+        "taglineAr": { "type": "string", "minLength": 1 },
+        "transitionText": { "type": "string", "minLength": 1 },
+        "next": { "const": "GROWTH_REPORT" }
+      }
+    },
+
+    "growthReportScene": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id", "titleAr", "location", "disclaimerAr", "growthIndex",
+        "traitDisplay", "bands", "extraElements", "replayButton"
+      ],
+      "properties": {
+        "id": { "const": "GROWTH_REPORT" },
+        "titleAr": { "type": "string", "minLength": 1 },
+        "location": { "type": "string", "minLength": 1 },
+        "disclaimerAr": { "type": "string", "minLength": 1 },
+        "growthIndex": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["labelAr", "formula", "includes", "excludes", "excludeNoteAr"],
+          "properties": {
+            "labelAr": { "type": "string", "minLength": 1 },
+            "formula": { "type": "string", "minLength": 1 },
+            "includes": { "type": "array", "items": { "$ref": "#/$defs/statCode" }, "minItems": 1 },
+            "excludes": { "type": "array", "items": { "$ref": "#/$defs/statCode" }, "minItems": 1 },
+            "excludeNoteAr": { "type": "string", "minLength": 1 }
+          }
+        },
+        "traitDisplay": {
+          "type": "array",
+          "minItems": 7,
+          "maxItems": 7,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["code", "labelAr", "displayAr"],
+            "properties": {
+              "code": { "$ref": "#/$defs/statCode" },
+              "labelAr": { "type": "string", "minLength": 1 },
+              "displayAr": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "bands": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["range", "labelAr", "textAr"],
+            "properties": {
+              "range": { "$ref": "#/$defs/rangePair" },
+              "labelAr": { "type": "string", "minLength": 1 },
+              "textAr": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "extraElements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "textAr"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "textAr": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "replayButton": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["labelAr", "resetsTo", "keeps"],
+          "properties": {
+            "labelAr": { "type": "string", "minLength": 1 },
+            "resetsTo": { "$ref": "#/$defs/sceneId" },
+            "keeps": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    }
+  }
+}
