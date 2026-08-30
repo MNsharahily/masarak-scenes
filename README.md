@@ -1,6 +1,8 @@
 # مَسَارُك — بيانات المشهد (scenes.json)
 
-هذا الملف يشرح كيف يُولَّد ملف بيانات القصة `scenes.json`، وكيف يُتحقَّق من صحته آليًا.
+[![التحقق من scenes.json](https://github.com/M-shrahili/masarak-scenes/actions/workflows/validate-scenes.yml/badge.svg)](https://github.com/M-shrahili/masarak-scenes/actions/workflows/validate-scenes.yml)
+
+هذا الملف يشرح كيف يُولَّد ملف بيانات القصة `scenes.json`، وكيف يُتحقَّق من صحته آليًا — يدويًا أو عبر GitHub Actions.
 
 ## الملفات في هذا المجلد
 
@@ -82,3 +84,14 @@ All validation checks passed.
 ```bash
 python3 build_scenes_json.py && python3 validate_scenes_json.py
 ```
+
+## الفحص الآلي عبر GitHub Actions
+
+كل رفع (`push`) أو طلب سحب (`pull_request`) إلى أي فرع يشغّل تلقائيًا سير عمل `.github/workflows/validate-scenes.yml`، الذي:
+
+1. يثبّت Python وحزمة `jsonschema`.
+2. يعيد توليد `scenes.json` عبر `build_scenes_json.py` (يتضمن فحص المخطط تلقائيًا كما هو الحال محليًا).
+3. يقارن الملف المُولَّد بالملف الموجود في المستودع (`git diff --exit-code`) — إذا اختلفا، فهذا يعني أن أحدًا عدّل `scenes.json` يدويًا أو نسي إعادة توليده بعد تعديل مصدر آخر (`simulate_endings.py` أو ملفات JS)، فيفشل الفحص برسالة توضيحية.
+4. يشغّل `validate_scenes_json.py` (فحص المخطط + إعادة المحاكاة الكاملة لـ 354,294 مسارًا) كطبقة تحقق نهائية مستقلة.
+
+يمكن مراجعة نتائج كل تشغيل من تبويب **Actions** في المستودع: [https://github.com/M-shrahili/masarak-scenes/actions](https://github.com/M-shrahili/masarak-scenes/actions).
